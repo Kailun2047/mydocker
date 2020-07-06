@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/Kailun2047/mydocker/container"
+	"github.com/Kailun2047/mydocker/subsystems"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
@@ -16,16 +17,23 @@ var runCommand = &cli.Command{
 			Name:  "it",
 			Usage: "interactive mode with tty",
 		},
+		&cli.StringFlag{
+			Name:  "m",
+			Usage: "specify memory limit for container",
+		},
 	},
 	Action: func(ctx *cli.Context) error {
 		if len(os.Args) < 1 {
 			log.Warn("Container command arguments can't be empty")
 			os.Exit(1)
 		}
-		args := ctx.Args()
-		command := args.Get(0)
 		tty := ctx.Bool("it")
-		Run(command, tty)
+		resourceConfig := &subsystems.ResourceConfig{
+			Memory: ctx.String("m"),
+		}
+		args := ctx.Args()
+		commands := args.Slice()
+		Run(commands, tty, resourceConfig)
 		return nil
 	},
 }
@@ -34,8 +42,8 @@ var initCommand = &cli.Command{
 	Name:  "init",
 	Usage: "init container process",
 	Action: func(ctx *cli.Context) error {
-		command := ctx.Args().Get(0)
-		err := container.RunContainerInitProcess(command, nil)
+		commands := ctx.Args().Slice()
+		err := container.RunContainerInitProcess(commands, nil)
 		return err
 	},
 }
