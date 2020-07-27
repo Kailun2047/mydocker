@@ -8,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// NewParentProcess returns a process (not started) that create a container
+// (i.e. a process with its own several namespaces), with commands running in it.
 func NewParentProcess(commands []string, tty bool) *exec.Cmd {
 	log.Infof("Creating parent process for command [%v]", commands)
 	args := []string{"init"}
@@ -24,6 +26,9 @@ func NewParentProcess(commands []string, tty bool) *exec.Cmd {
 	return cmd
 }
 
+// RunContainerInitProcess initialize container process. Specifically, it mount /proc and
+// invokes execve system call through syscall.Exec() to replace the current process with
+// PID 1 with the command that the container is started with.
 func RunContainerInitProcess(commands []string, args []string) error {
 	log.Infof("Initializing container process for command [%v]", commands)
 	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV

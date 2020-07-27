@@ -13,6 +13,13 @@ type Subsystem interface {
 	Remove(cgroupPath string) error
 }
 
+// Subsystem instances. Here we deal with 3 of them: memory, cpu set and cpu share.
+// Limit on memory is specified with memory in bytes; limit on cpu set is specified
+// in comma separated values with dash indicating a range (e.g. 0-2,4); cpu share is
+// specified with a value larger than 2 and will be evaluated relatively to the value
+// set for other processes.
 var SubsystemIns = []Subsystem{
 	&MemorySubsystem{},
+	&CpuSetSubsystem{},
+	&CpuShareSubsystem{},
 }
