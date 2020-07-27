@@ -42,8 +42,7 @@ var initCommand = &cli.Command{
 	Name:  "init",
 	Usage: "init container process",
 	Action: func(ctx *cli.Context) error {
-		commands := ctx.Args().Slice()
-		err := container.RunContainerInitProcess(commands, nil)
+		err := container.RunContainerInitProcess()
 		return err
 	},
 }
