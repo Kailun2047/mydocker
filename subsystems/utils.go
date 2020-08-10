@@ -24,7 +24,7 @@ func GetSubsystemMountPoint(subsystem string) (string, error) {
 			return fields[4], nil
 		}
 	}
-	return "", fmt.Errorf("Subsystem mount point not found in mountinfo; scanning error: [%v]", scanner.Err())
+	return "", fmt.Errorf("[%s] subsystem mount point not found in mountinfo; scanning error: [%v]", subsystem, scanner.Err())
 }
 
 // Get the absolute path of the cgroup under the specified subsystem for cgroup cgroupPath.

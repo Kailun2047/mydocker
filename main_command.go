@@ -21,6 +21,14 @@ var runCommand = &cli.Command{
 			Name:  "m",
 			Usage: "specify memory limit for container",
 		},
+		&cli.StringFlag{
+			Name:  "c",
+			Usage: "specify cpu share for container",
+		},
+		&cli.StringFlag{
+			Name:  "cpuset-cpus",
+			Usage: "specify cpu set that can be used by container",
+		},
 	},
 	Action: func(ctx *cli.Context) error {
 		if len(os.Args) < 1 {

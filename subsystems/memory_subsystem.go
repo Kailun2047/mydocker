@@ -15,9 +15,6 @@ func (s *MemorySubsystem) Name() string {
 }
 
 func (s *MemorySubsystem) Set(cgroupPath string, config *ResourceConfig) error {
-	if len(config.Memory) == 0 {
-		return nil
-	}
 	absCgroupPath, err := GetCgroupPath(cgroupPath, s.Name(), true)
 	if err != nil {
 		return err

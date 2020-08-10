@@ -11,13 +11,10 @@ import (
 type CpuShareSubsystem struct{}
 
 func (s *CpuShareSubsystem) Name() string {
-	return "cpu"
+	return "cpuacct"
 }
 
 func (s *CpuShareSubsystem) Set(cgroupPath string, config *ResourceConfig) error {
-	if len(config.CpuShare) == 0 {
-		return nil
-	}
 	absCgroupPath, err := GetCgroupPath(cgroupPath, s.Name(), true)
 	if err != nil {
 		return err

@@ -15,9 +15,6 @@ func (s *CpuSetSubsystem) Name() string {
 }
 
 func (s *CpuSetSubsystem) Set(cgroupPath string, config *ResourceConfig) error {
-	if len(config.CpuSet) == 0 {
-		return nil
-	}
 	absCgroupPath, err := GetCgroupPath(cgroupPath, s.Name(), true)
 	if err != nil {
 		return err
