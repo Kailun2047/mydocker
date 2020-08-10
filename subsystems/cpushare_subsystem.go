@@ -15,6 +15,9 @@ func (s *CpuShareSubsystem) Name() string {
 }
 
 func (s *CpuShareSubsystem) Set(cgroupPath string, config *ResourceConfig) error {
+	if len(config.CpuShare) == 0 {
+		return nil
+	}
 	absCgroupPath, err := GetCgroupPath(cgroupPath, s.Name(), true)
 	if err != nil {
 		return err
@@ -32,7 +35,7 @@ func (s *CpuShareSubsystem) Apply(cgroupPath string, pid int) error {
 		return err
 	}
 	if err = ioutil.WriteFile(path.Join(absCgroupPath, "tasks"), []byte(strconv.Itoa(pid)), 0644); err != nil {
-		return fmt.Errorf("Failed to add process [%d] to cgroup [%s]", pid, absCgroupPath)
+		return fmt.Errorf("Failed to add process [%d] to cgroup [%s]: [%v]", pid, absCgroupPath, err)
 	}
 	return nil
 }

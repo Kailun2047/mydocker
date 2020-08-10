@@ -17,19 +17,31 @@ func sendInitCommands(writePipe *os.File, commands []string) error {
 	if err != nil {
 		return fmt.Errorf("Failed to write pipe: [%v]", err)
 	}
+	writePipe.Close()
 	return nil
 }
 
 func Run(commands []string, tty bool, config *subsystems.ResourceConfig) {
 	cmd, writePipe := container.NewParentProcess(tty)
 	if err := cmd.Start(); err != nil {
-		log.Errorf(err.Error())
+		log.Errorf("Command failed to start: [%v]", err.Error())
+		return
 	}
 	sendInitCommands(writePipe, commands)
 	cgroupManager := cgroup.NewCgroupManager("mydocker-cgroup")
-	cgroupManager.Set(config)
-	cgroupManager.Apply(cmd.Process.Pid)
+	err := cgroupManager.Set(config)
+	if err != nil {
+		log.Errorf("Failed to set resource configurations: [%v]", err)
+		return
+	}
+	err = cgroupManager.Apply(cmd.Process.Pid)
+	if err != nil {
+		log.Errorf("Failed to apply resource configurations: [%v]", err)
+	}
 	defer cgroupManager.Destroy()
-	cmd.Wait()
-	os.Exit(-1)
+	err = cmd.Wait()
+	if err != nil {
+		log.Errorf("Failed to execute command [%v]: [%v]", cmd.Args, err)
+	}
+	os.Exit(0)
 }

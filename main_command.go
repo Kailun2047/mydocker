@@ -29,8 +29,11 @@ var runCommand = &cli.Command{
 		}
 		tty := ctx.Bool("it")
 		resourceConfig := &subsystems.ResourceConfig{
-			Memory: ctx.String("m"),
+			Memory:   ctx.String("m"),
+			CpuShare: ctx.String("c"),
+			CpuSet:   ctx.String("cpuset-cpus"),
 		}
+		log.Infof("Resource config: [%v]", *resourceConfig)
 		args := ctx.Args()
 		commands := args.Slice()
 		Run(commands, tty, resourceConfig)

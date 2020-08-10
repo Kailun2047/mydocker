@@ -15,6 +15,9 @@ func (s *MemorySubsystem) Name() string {
 }
 
 func (s *MemorySubsystem) Set(cgroupPath string, config *ResourceConfig) error {
+	if len(config.Memory) == 0 {
+		return nil
+	}
 	absCgroupPath, err := GetCgroupPath(cgroupPath, s.Name(), true)
 	if err != nil {
 		return err
@@ -33,7 +36,7 @@ func (s *MemorySubsystem) Apply(cgroupPath string, pid int) error {
 	}
 	err = ioutil.WriteFile(path.Join(absCgroupPath, "tasks"), []byte(strconv.Itoa(pid)), 0644)
 	if err != nil {
-		return fmt.Errorf("Failed to add pid [%d] to cgroup [%s]", pid, absCgroupPath)
+		return fmt.Errorf("Failed to add pid [%d] to cgroup [%s]: [%v]", pid, absCgroupPath, err)
 	}
 	return nil
 }
