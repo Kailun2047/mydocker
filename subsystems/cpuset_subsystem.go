@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 )
 
 type CpuSetSubsystem struct{}
@@ -19,9 +20,16 @@ func (s *CpuSetSubsystem) Set(cgroupPath string, config *ResourceConfig) error {
 	if err != nil {
 		return err
 	}
-	cpuset := config.CpuSet
-	if err = ioutil.WriteFile(path.Join(absCgroupPath, "cpuset.cpus"), []byte(cpuset), 0644); err != nil {
-		return fmt.Errorf("Failed to write cpu set limit: [%v]", err)
+	cpuset := strings.Split(config.CpuSet, " ")
+	if len(cpuset) != 2 {
+		return fmt.Errorf("Invalid cpuset configuration (want 2 values but get %d)", len(cpuset))
+	}
+	cpusetCpus, cpusetMems := cpuset[0], cpuset[1]
+	if err = ioutil.WriteFile(path.Join(absCgroupPath, "cpuset.cpus"), []byte(cpusetCpus), 0644); err != nil {
+		return fmt.Errorf("Failed to write cpu set cpu limit: [%v]", err)
+	}
+	if err = ioutil.WriteFile(path.Join(absCgroupPath, "cpuset.mems"), []byte(cpusetMems), 0644); err != nil {
+		return fmt.Errorf("Failed to write cpu set mem limit: [%v]", err)
 	}
 	return nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/Kailun2047/mydocker/container"
 	"github.com/Kailun2047/mydocker/subsystems"
@@ -29,6 +30,10 @@ var runCommand = &cli.Command{
 			Name:  "cpuset-cpus",
 			Usage: "specify cpu set that can be used by container",
 		},
+		&cli.StringFlag{
+			Name:  "cpuset-mems",
+			Usage: "specify memory node set that can be used by container",
+		},
 	},
 	Action: func(ctx *cli.Context) error {
 		if len(os.Args) < 1 {
@@ -39,7 +44,7 @@ var runCommand = &cli.Command{
 		resourceConfig := &subsystems.ResourceConfig{
 			Memory:   ctx.String("m"),
 			CpuShare: ctx.String("c"),
-			CpuSet:   ctx.String("cpuset-cpus"),
+			CpuSet:   strings.Join([]string{ctx.String("cpuset-cpus"), ctx.String("cpuset-mems")}, " "),
 		}
 		log.Infof("Resource config: [%v]", *resourceConfig)
 		args := ctx.Args()
