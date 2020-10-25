@@ -39,9 +39,10 @@ func Run(commands []string, tty bool, config *subsystems.ResourceConfig) {
 		log.Errorf("Failed to apply resource configurations: [%v]", err)
 	}
 	defer cgroupManager.Destroy()
+	defer container.DeleteWorkspace(container.ContainerRootUrl, container.ContainerMntUrl)
 	err = cmd.Wait()
 	if err != nil {
 		log.Errorf("Failed to execute command [%v]: [%v]", cmd.Args, err)
 	}
-	os.Exit(0)
+	return
 }
